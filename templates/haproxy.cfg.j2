@@ -1,0 +1,51 @@
+global
+        log 127.0.0.1   local0 notice
+        daemon
+        master-worker
+        nbproc 1
+        nbthread {{ ansible_processor_count }}
+        cpu-map auto:1/1-{{ ansible_processor_count }} 0-{{ ansible_processor_count - 1 }}
+        chroot /var/lib/haproxy
+        user    haproxy
+        group   haproxy
+        maxconn 100000
+
+defaults
+        log     global
+        retries 2
+        mode    tcp
+        #option  forwardfor
+        option  httplog
+        option  dontlognull
+        timeout connect 5000ms
+        timeout client 5000ms
+        timeout server 5000ms
+        backlog 16384
+        default-server inter 2s downinter 4s rise 3 fall 2 slowstart 30s weight 1
+
+frontend non-ssl-redirect
+        mode http
+        bind {{ ansible_eth0_2.ipv4.address }}:80 name http tcp-ut 20s
+        timeout http-request 5s
+        redirect scheme https
+
+frontend ssl-forward
+        bind {{ ansible_eth0_2.ipv4.address }}:443 name https tcp-ut 20s
+        option tcplog
+        default_backend app_pool
+
+backend app_pool
+        balance roundrobin
+        stick-table type binary len 32 size 1m expire 5m
+        acl clienthello req.ssl_hello_type 1
+        acl serverhello res.ssl_hello_type 2
+        tcp-request inspect-delay 5s
+        tcp-request content accept if clienthello
+        tcp-response content accept if serverhello
+        stick on payload_lv(43,1) if clienthello
+        stick store-response payload_lv(43,1) if serverhello
+        option tcp-check
+        tcp-check connect port 443 ssl
+        {% for host in groups['web_node'] %}
+        server {{ hostvars[host]['name'] }} {{ hostvars[host]['ansible_eth1']['ipv4']['address'] }}:443
+        {% endfor %}
