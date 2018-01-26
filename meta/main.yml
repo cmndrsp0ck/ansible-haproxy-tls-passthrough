@@ -16,7 +16,8 @@ galaxy_info:
 
   galaxy_tags:
     - haproxy
-    - TLS-passthrough
+    - TLS
+    - passthrough
     - DigitalOcean
 
 dependencies: []
