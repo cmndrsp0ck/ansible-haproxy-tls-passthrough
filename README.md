@@ -1,4 +1,4 @@
-haproxy-tls-pass
+ansible-haproxy-tls-passthrough
 =========
 
 This role will configure two haproxy nodes in an active-passive configuration on DigitalOcean Droplets. A simple redirect to https is enforced which is then passed to backends on port 443.
@@ -31,16 +31,16 @@ Begin by installing the role.
 
 or
 
-    ansible-galaxy install cmndrsp0ck.haproxy-tls-pass
+    ansible-galaxy install cmndrsp0ck.ansible-haproxy-tls-passthrough
 
 Once the role is installed you can set it up in your playbook.
 
     - hosts: load_balancer
       roles:
-          - { role: cmndrsp0ck.haproxy-tls-pass }
+          - { role: cmndrsp0ck.ansible-haproxy-tls-passthrough }
       become: True
 
 License
 -------
 
-BSD
+GPL-3.0
