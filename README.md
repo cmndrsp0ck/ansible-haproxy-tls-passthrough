@@ -29,10 +29,6 @@ Begin by installing the role.
 
     ansible-galaxy install -r requirements.yml
 
-or
-
-    ansible-galaxy install ansible-haproxy-tls-passthrough
-
 Once the role is installed you can set it up in your playbook.
 
     - hosts: load_balancer
