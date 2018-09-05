@@ -30,7 +30,7 @@ frontend non-ssl-redirect
         redirect scheme https
 
 frontend ssl-forward
-        bind {{ ansible_eth0_2.ipv4.address }}:443 name https tcp-ut 20s
+        bind {{ ansible_eth0_1.ipv4.address }}:443 name https tcp-ut 20s
         option tcplog
         default_backend app_pool
 
